@@ -1,6 +1,11 @@
-FROM node:14-slim
+FROM node:14-alpine
 
-ARG INSTALL_PATH=/opt/mcsmanager/daemon
+RUN apk --no-cache add git
+RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/mcsmanager/daemon --depth=1
+RUN cd /opt/mcsmanager/daemon && npm i --production
+
+RUN mkdir -p /opt/mcsmanager/daemon/data
+
 ARG JDK_VERSION=17
 
 # install git & openjdk
@@ -10,16 +15,14 @@ RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.li
     apt update && \
     apt install -y git openjdk-$JDK_VERSION-jre-headless
 
-# install mcsm
-RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production $INSTALL_PATH/daemon && \
-    cd $INSTALL_PATH/daemon && \
-    npm i --production
-
 ENV TZ=Asia/Shanghai
-ENV PUID=0
-ENV PGID=0
-ENV UMASK=022
-VOLUME [ "$INSTALL_PATH/daemon/data", "$INSTALL_PATH/daemon/logs" ]
-EXPOSE 24444 25565-25575
-WORKDIR $INSTALL_PATH/daemon
-CMD [ "node", "app.js" ]
+
+VOLUME [ "/var/run/docker.sock" ]
+VOLUME [ "/opt/mcsmanager/daemon/data" ]
+VOLUME [ "/opt/mcsmanager/daemon/data" ]
+
+EXPOSE 24444
+
+WORKDIR /opt/mcsmanager/daemon
+
+ENTRYPOINT [ "node", "app.js" ]
