@@ -1,7 +1,7 @@
 FROM node:14-slim
 
-ARG INSTALL_PATH=/opt/mcsm
-ARG JDK_VERSION
+ARG INSTALL_PATH=/opt/mcsmanager/daemon
+ARG JDK_VERSION=17
 
 # install git & openjdk
 # add bullseye repo for openjdk-17, stretch repo for openjdk-8, openjdk-11 is already included in default buster repo
