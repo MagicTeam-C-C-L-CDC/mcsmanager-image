@@ -1,18 +1,25 @@
-FROM amazoncorretto:17.0.9-alpine3.17
+FROM node:14-slim
 
-RUN apk --no-cache add git
-RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/mcsmanager/daemon --depth=1
-RUN cd /opt/mcsmanager/daemon && npm i --production
+ARG INSTALL_PATH=/opt/mcsm
+ARG JDK_VERSION
 
-RUN mkdir -p /opt/mcsmanager/daemon/data
+# install git & openjdk
+# add bullseye repo for openjdk-17, stretch repo for openjdk-8, openjdk-11 is already included in default buster repo
+RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
+    echo "deb http://archive.debian.org/debian-archive/debian stretch main" >> /etc/apt/sources.list && \
+    apt update && \
+    apt install -y git openjdk-$JDK_VERSION-jre-headless
+
+# install mcsm
+RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production $INSTALL_PATH/daemon && \
+    cd $INSTALL_PATH/daemon && \
+    npm i --production
 
 ENV TZ=Asia/Shanghai
-
-VOLUME [ "/var/run/docker.sock" ]
-VOLUME [ "/opt/mcsmanager/daemon/data" ]
-
-EXPOSE 24444
-
-WORKDIR /opt/mcsmanager/daemon
-
-ENTRYPOINT [ "node", "app.js" ]
+ENV PUID=0
+ENV PGID=0
+ENV UMASK=022
+VOLUME [ "$INSTALL_PATH/daemon/data", "$INSTALL_PATH/daemon/logs" ]
+EXPOSE 24444 25565-25575
+WORKDIR $INSTALL_PATH/daemon
+CMD [ "node", "app.js" ]
