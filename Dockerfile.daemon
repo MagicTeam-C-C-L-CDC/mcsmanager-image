@@ -1,4 +1,4 @@
-FROM openjdk:17-oracle
+FROM amazoncorretto:17.0.7-alpine
 
 RUN apk --no-cache add git
 RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/mcsmanager/daemon --depth=1
