@@ -6,20 +6,19 @@ RUN cd /opt/mcsmanager/daemon && npm i --production
 
 RUN mkdir -p /opt/mcsmanager/daemon/data
 
-ARG JDK_VERSION=17
-
-# install git & openjdk
-# add bullseye repo for openjdk-17, stretch repo for openjdk-8, openjdk-11 is already included in default buster repo
-RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
-    echo "deb http://archive.debian.org/debian-archive/debian stretch main" >> /etc/apt/sources.list && \
-    apt update && \
-    apt install -y git openjdk-$JDK_VERSION-jre-headless
+RUN apk --no-cache add wget curl
+RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb
+RUN add ./jdk-17_linux-x64_bin.deb
+RUN cat <<EOF | tee /etc/profile.d/jdk.sh
+RUN export JAVA_HOME=/usr/lib/jvm/jdk-17/
+RUN export PATH=\$PATH:\$JAVA_HOME/bin
+RUN source /etc/profile.d/jdk.sh
 
 ENV TZ=Asia/Shanghai
 
 VOLUME [ "/var/run/docker.sock" ]
 VOLUME [ "/opt/mcsmanager/daemon/data" ]
-VOLUME [ "/opt/mcsmanager/daemon/data" ]
+VOLUME [ "/usr/lib/jvm" ]
 
 EXPOSE 24444
 
