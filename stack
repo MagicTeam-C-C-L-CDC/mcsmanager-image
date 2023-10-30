@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  mcsm-web:
+    image: alisaqaq/mcsmanager-web:latest
+    container_name: mcsm-web
+    ports:
+      - "23333:23333"
+    volumes:
+      - /home/user/mcsmanager/web/data:/opt/mcsmanager/web/data
+    restart: unless-stopped
+
+  mcsm-daemon:
+    image: littleligr/mcsmanager-daemon:latest
+    container_name: mcsm-daemon
+    ports:
+      - "24444:24444"
+      - 25565:25565
+      - 24454:24454
+    volumes:
+      - /home/user/mcsmanager/daemon/data:/opt/mcsmanager/web/data
+    restart: unless-stopped
