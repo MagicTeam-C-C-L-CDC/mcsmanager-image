@@ -1,18 +1,11 @@
-FROM node:14-alpine
+FROM  container-registry.oracle.com/graalvm/nodejs-community:17.0.9-ol8
 
-RUN apk --no-cache add git
+RUN microdnf install git -y
 RUN git clone https://github.com/MCSManager/MCSManager-Daemon-Production /opt/mcsmanager/daemon --depth=1
 RUN cd /opt/mcsmanager/daemon && npm i --production
 
 RUN mkdir -p /opt/mcsmanager/daemon/data
 
-RUN apk --no-cache add wget curl
-RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb
-RUN add ./jdk-17_linux-x64_bin.deb
-RUN cat <<EOF | tee /etc/profile.d/jdk.sh
-RUN export JAVA_HOME=/usr/lib/jvm/jdk-17/
-RUN export PATH=\$PATH:\$JAVA_HOME/bin
-RUN source /etc/profile.d/jdk.sh
 
 ENV TZ=Asia/Shanghai
 
