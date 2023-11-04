@@ -16,7 +16,8 @@ services:
     ports:
       - "24444:24444"
       - 25565:25565
-      - 24454:24454
+      - 24454:24454/udp
     volumes:
-      - /home/user/mcsmanager/daemon/data:/opt/mcsmanager/web/data
+      - /home/user/mcsmanager/daemon/data:/opt/mcsmanager/daemon/data
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
